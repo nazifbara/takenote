@@ -72,7 +72,7 @@ export default {
       })
 
       response.status(200).send({ message: 'Successly commited to takenote-data' })
-    } catch (error) {
+    } catch (error: any) {
       response
         .status(400)
         .send({ message: error.message || 'Something went wrong while syncing data' })
@@ -95,12 +95,12 @@ export default {
 
       try {
         JSON.parse(notes)
-      } catch (error) {
+      } catch (error: any) {
         response.status(400).send({ message: error.message || 'Must be valid JSON.' })
       }
 
       response.status(200).send(notes)
-    } catch (error) {
+    } catch (error: any) {
       response
         .status(400)
         .send({ message: error.message || 'Something went wrong while fetching note data' })
@@ -123,12 +123,12 @@ export default {
 
       try {
         JSON.parse(categories)
-      } catch (error) {
+      } catch (error: any) {
         response.status(400).send({ message: error.message || 'Must be valid JSON.' })
       }
 
       response.status(200).send(categories)
-    } catch (error) {
+    } catch (error: any) {
       response
         .status(400)
         .send({ message: error.message || 'Something went wrong while fetching category data' })

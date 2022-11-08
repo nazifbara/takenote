@@ -32,7 +32,7 @@ function* loginUser() {
 
       yield put(loginSuccess(data))
     }
-  } catch (error) {
+  } catch (error: any) {
     yield put(loginError(error.message))
   }
 }
@@ -53,7 +53,7 @@ function* logoutUser() {
 }
 
 // Get notes from API
-function* fetchNotes() {
+function* fetchNotes(): any {
   let data
   try {
     if (isDemo) {
@@ -64,13 +64,13 @@ function* fetchNotes() {
     const { notesSortKey } = yield select(getSettings)
 
     yield put(loadNotesSuccess({ notes: data, sortOrderKey: notesSortKey }))
-  } catch (error) {
+  } catch (error: any) {
     yield put(loadNotesError(error.message))
   }
 }
 
 // Get categories from API
-function* fetchCategories() {
+function* fetchCategories(): any {
   let data
   try {
     if (isDemo) {
@@ -80,13 +80,13 @@ function* fetchCategories() {
     }
 
     yield put(loadCategoriesSuccess(data))
-  } catch (error) {
+  } catch (error: any) {
     yield put(loadCategoriesError(error.message))
   }
 }
 
 // Get settings from API
-function* fetchSettings() {
+function* fetchSettings(): any {
   let data
   try {
     data = yield requestSettings()
@@ -105,12 +105,12 @@ function* syncData({ payload }: SyncAction) {
       yield axios.post('/api/sync', payload)
     }
     yield put(syncSuccess(dayjs().format()))
-  } catch (error) {
+  } catch (error: any) {
     yield put(syncError(error.message))
   }
 }
 
-function* syncSettings() {
+function* syncSettings(): any {
   try {
     const settings = yield select(getSettings)
 
