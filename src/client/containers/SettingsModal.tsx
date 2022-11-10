@@ -11,19 +11,13 @@ import {
   UploadCloud,
 } from 'react-feather'
 
-import {
-  toggleSettingsModal,
-  updateCodeMirrorOption,
-  togglePreviewMarkdown,
-  toggleDarkTheme,
-  updateNotesSortStrategy,
-} from '@/slices/settings'
 import { updateNotes, importNotes } from '@/slices/note'
 import { logout } from '@/slices/auth'
 import { importCategories } from '@/slices/category'
 import { shortcutMap, notesSortOptions, directionTextOptions } from '@/utils/constants'
 import { CategoryItem, NoteItem, ReactMouseEvent } from '@/types'
-import { getSettings, getAuth, getNotes, getCategories } from '@/selectors'
+import { useSettingsStore } from '@/store/settings'
+import { getAuth, getNotes, getCategories } from '@/selectors'
 import { Option } from '@/components/SettingsModal/Option'
 import { Shortcut } from '@/components/SettingsModal/Shortcut'
 import { SelectOptions } from '@/components/SettingsModal/SelectOptions'
@@ -40,10 +34,30 @@ export const SettingsModal: React.FC = () => {
   // ===========================================================================
   // Selectors
   // ===========================================================================
+  const {
+    codeMirrorOptions,
+    isOpen,
+    previewMarkdown,
+    darkTheme,
+    notesSortKey,
+    toggleSettingsModal,
+    updateCodeMirrorOption,
+    togglePreviewMarkdown,
+    toggleDarkTheme,
+    updateNotesSortStrategy,
+  } = useSettingsStore((state) => ({
+    codeMirrorOptions: state.codeMirrorOptions,
+    isOpen: state.isOpen,
+    previewMarkdown: state.previewMarkdown,
+    darkTheme: state.darkTheme,
+    notesSortKey: state.notesSortKey,
+    toggleSettingsModal: state.toggleSettingsModal,
+    updateCodeMirrorOption: state.updateCodeMirrorOption,
+    togglePreviewMarkdown: state.togglePreviewMarkdown,
+    toggleDarkTheme: state.toggleDarkTheme,
+    updateNotesSortStrategy: state.updateNotesSortStrategy,
+  }))
 
-  const { codeMirrorOptions, isOpen, previewMarkdown, darkTheme, notesSortKey } = useSelector(
-    getSettings
-  )
   const { currentUser } = useSelector(getAuth)
   const { notes, activeFolder, activeCategoryId } = useSelector(getNotes)
   const { categories } = useSelector(getCategories)
@@ -55,13 +69,8 @@ export const SettingsModal: React.FC = () => {
   const dispatch = useDispatch()
 
   const _logout = () => dispatch(logout())
-  const _toggleSettingsModal = () => dispatch(toggleSettingsModal())
-  const _togglePreviewMarkdown = () => dispatch(togglePreviewMarkdown())
-  const _toggleDarkTheme = () => dispatch(toggleDarkTheme())
   const _updateNotesSortStrategy = (sortBy: NotesSortKey) =>
     dispatch(updateNotesSortStrategy(sortBy))
-  const _updateCodeMirrorOption = (key: string, value: any) =>
-    dispatch(updateCodeMirrorOption({ key, value }))
   const _updateNotes = (sortOrderKey: NotesSortKey) =>
     dispatch(updateNotes({ notes, activeFolder, activeCategoryId, sortOrderKey }))
   const _importBackup = (notes: NoteItem[], categories: CategoryItem[]) => {
@@ -84,25 +93,25 @@ export const SettingsModal: React.FC = () => {
 
     if (node.current && node.current.contains(event.target as HTMLDivElement)) return
     if (isOpen) {
-      _toggleSettingsModal()
+      toggleSettingsModal()
     }
   }
 
-  const togglePreviewMarkdownHandler = () => _togglePreviewMarkdown()
+  const togglePreviewMarkdownHandler = () => togglePreviewMarkdown()
   const toggleDarkThemeHandler = () => {
-    _toggleDarkTheme()
-    _updateCodeMirrorOption('theme', darkTheme ? 'base16-light' : 'new-moon')
+    toggleDarkTheme()
+    updateCodeMirrorOption('theme', darkTheme ? 'base16-light' : 'new-moon')
   }
   const toggleLineHighlight = () =>
-    _updateCodeMirrorOption('styleActiveLine', !codeMirrorOptions.styleActiveLine)
+    updateCodeMirrorOption('styleActiveLine', (!codeMirrorOptions.styleActiveLine).toString())
   const toggleScrollPastEnd = () =>
-    _updateCodeMirrorOption('scrollPastEnd', !codeMirrorOptions.scrollPastEnd)
+    updateCodeMirrorOption('scrollPastEnd', (!codeMirrorOptions.scrollPastEnd).toString())
   const toggleLineNumbersHandler = () =>
-    _updateCodeMirrorOption('lineNumbers', !codeMirrorOptions.lineNumbers)
+    updateCodeMirrorOption('lineNumbers', (!codeMirrorOptions.lineNumbers).toString())
   const handleEscPress = (event: KeyboardEvent) => {
     event.stopPropagation()
     if (event.key === 'Escape' && isOpen) {
-      _toggleSettingsModal()
+      toggleSettingsModal()
     }
   }
   const updateNotesSortStrategyHandler = (selectedOption: any) => {
@@ -110,7 +119,7 @@ export const SettingsModal: React.FC = () => {
     _updateNotes(selectedOption.value)
   }
   const updateNotesDirectionHandler = (selectedOption: any) => {
-    _updateCodeMirrorOption('direction', selectedOption.value)
+    updateCodeMirrorOption('direction', selectedOption.value)
   }
   const downloadNotesHandler = () => downloadNotes(notes, categories)
   const backupHandler = () => backupNotes(notes, categories)
@@ -146,7 +155,7 @@ export const SettingsModal: React.FC = () => {
           <div
             className="close-button"
             onClick={() => {
-              if (isOpen) _toggleSettingsModal()
+              if (isOpen) toggleSettingsModal()
             }}
           >
             <X size={20} />

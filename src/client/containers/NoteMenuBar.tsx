@@ -17,14 +17,9 @@ import {
 import { TestID } from '@resources/TestID'
 import { LastSyncedNotification } from '@/components/LastSyncedNotification'
 import { NoteItem, CategoryItem } from '@/types'
-import {
-  toggleSettingsModal,
-  togglePreviewMarkdown,
-  toggleDarkTheme,
-  updateCodeMirrorOption,
-} from '@/slices/settings'
 import { toggleFavoriteNotes, toggleTrashNotes } from '@/slices/note'
-import { getCategories, getNotes, getSync, getSettings } from '@/selectors'
+import { useSettingsStore } from '@/store/settings'
+import { getCategories, getNotes, getSync } from '@/selectors'
 import { downloadNotes, isDraftNote, getShortUuid, copyToClipboard } from '@/utils/helpers'
 import { sync } from '@/slices/sync'
 
@@ -36,7 +31,19 @@ export const NoteMenuBar = () => {
   const { notes, activeNoteId } = useSelector(getNotes)
   const { categories } = useSelector(getCategories)
   const { syncing, lastSynced, pendingSync } = useSelector(getSync)
-  const { darkTheme } = useSelector(getSettings)
+  const {
+    darkTheme,
+    toggleSettingsModal,
+    togglePreviewMarkdown,
+    toggleDarkTheme,
+    updateCodeMirrorOption,
+  } = useSettingsStore((state) => ({
+    darkTheme: state.darkTheme,
+    toggleSettingsModal: state.toggleSettingsModal,
+    togglePreviewMarkdown: state.togglePreviewMarkdown,
+    toggleDarkTheme: state.toggleDarkTheme,
+    updateCodeMirrorOption: state.updateCodeMirrorOption,
+  }))
 
   // ===========================================================================
   // Other
@@ -79,10 +86,6 @@ export const NoteMenuBar = () => {
   const _toggleFavoriteNotes = (noteId: string) => dispatch(toggleFavoriteNotes(noteId))
   const _sync = (notes: NoteItem[], categories: CategoryItem[]) =>
     dispatch(sync({ notes, categories }))
-  const _toggleSettingsModal = () => dispatch(toggleSettingsModal())
-  const _toggleDarkTheme = () => dispatch(toggleDarkTheme())
-  const _updateCodeMirrorOption = (key: string, value: any) =>
-    dispatch(updateCodeMirrorOption({ key, value }))
 
   // ===========================================================================
   // Handlers
@@ -92,10 +95,10 @@ export const NoteMenuBar = () => {
   const favoriteNoteHandler = () => _toggleFavoriteNotes(activeNoteId)
   const trashNoteHandler = () => _toggleTrashNotes(activeNoteId)
   const syncNotesHandler = () => _sync(notes, categories)
-  const settingsHandler = () => _toggleSettingsModal()
+  const settingsHandler = () => toggleSettingsModal()
   const toggleDarkThemeHandler = () => {
-    _toggleDarkTheme()
-    _updateCodeMirrorOption('theme', darkTheme ? 'base16-light' : 'new-moon')
+    toggleDarkTheme()
+    updateCodeMirrorOption('theme', darkTheme ? 'base16-light' : 'new-moon')
   }
   const togglePreviewHandler = () => {
     togglePreviewIcon(!isToggled)

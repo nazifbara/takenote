@@ -17,7 +17,8 @@ import {
   updateSelectedNotes,
 } from '@/slices/note'
 import { NoteItem, ReactDragEvent, ReactMouseEvent } from '@/types'
-import { getNotes, getSettings, getCategories } from '@/selectors'
+import { useSettingsStore } from '@/store/settings'
+import { getNotes, getCategories } from '@/selectors'
 import { getNotesSorter } from '@/utils/notesSortStrategies'
 
 export const NoteList: React.FC = () => {
@@ -25,7 +26,7 @@ export const NoteList: React.FC = () => {
   // Selectors
   // ===========================================================================
 
-  const { notesSortKey } = useSelector(getSettings)
+  const notesSortKey = useSettingsStore((state) => state.notesSortKey)
   const { activeCategoryId, activeFolder, selectedNotesIds, notes, searchValue } =
     useSelector(getNotes)
   const { categories } = useSelector(getCategories)

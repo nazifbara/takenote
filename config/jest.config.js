@@ -1,6 +1,7 @@
 module.exports = {
   // Setting the root to the actual root, since this file is in root/config
   preset: 'ts-jest',
+  testEnvironment: 'jsdom',
   rootDir: '../',
   roots: ['<rootDir>/src', '<rootDir>/tests/unit'],
   transform: {

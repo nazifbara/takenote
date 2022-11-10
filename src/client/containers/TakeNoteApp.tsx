@@ -24,8 +24,8 @@ import { loadCategories, swapCategories } from '@/slices/category'
 import { sync } from '@/slices/sync'
 import { NoteItem, CategoryItem } from '@/types'
 import { loadNotes } from '@/slices/note'
-import { loadSettings } from '@/slices/settings'
-import { getSettings, getNotes, getCategories, getSync } from '@/selectors'
+import { useSettingsStore } from '@/store/settings'
+import { getNotes, getCategories, getSync } from '@/selectors'
 
 dayjs.extend(localizedFormat)
 dayjs.locale(getDayJsLocale(navigator.language))
@@ -35,7 +35,11 @@ export const TakeNoteApp: React.FC = () => {
   // Selectors
   // ===========================================================================
 
-  const { darkTheme, sidebarVisible } = useSelector(getSettings)
+  const { darkTheme, sidebarVisible, loadSettings } = useSettingsStore((state) => ({
+    darkTheme: state.darkTheme,
+    sidebarVisible: state.sidebarVisible,
+    loadSettings: state.loadSettings,
+  }))
   const { activeFolder, activeCategoryId, notes } = useSelector(getNotes)
   const { categories } = useSelector(getCategories)
   const { pendingSync } = useSelector(getSync)
@@ -50,7 +54,6 @@ export const TakeNoteApp: React.FC = () => {
 
   const _loadNotes = () => dispatch(loadNotes())
   const _loadCategories = () => dispatch(loadCategories())
-  const _loadSettings = () => dispatch(loadSettings())
   const _swapCategories = (categoryId: number, destinationId: number) =>
     dispatch(swapCategories({ categoryId, destinationId }))
   const _sync = (notes: NoteItem[], categories: CategoryItem[]) =>
@@ -79,7 +82,7 @@ export const TakeNoteApp: React.FC = () => {
   useEffect(() => {
     _loadNotes()
     _loadCategories()
-    _loadSettings()
+    loadSettings()
   }, [])
 
   useInterval(() => {

@@ -9,6 +9,7 @@ import { FolderOption } from '@/components/AppSidebar/FolderOption'
 import { ScratchpadOption } from '@/components/AppSidebar/ScratchpadOption'
 import { Folder, NotesSortKey } from '@/utils/enums'
 import { CategoryList } from '@/containers/CategoryList'
+import { useSettingsStore } from '@/store/settings'
 import {
   addNote,
   swapFolder,
@@ -18,8 +19,7 @@ import {
   updateSelectedNotes,
   unassignTrashFromNotes,
 } from '@/slices/note'
-import { togglePreviewMarkdown } from '@/slices/settings'
-import { getSettings, getNotes } from '@/selectors'
+import { getNotes } from '@/selectors'
 import { NoteItem } from '@/types'
 import { newNoteHandlerHelper, getActiveNote } from '@/utils/helpers'
 
@@ -29,7 +29,11 @@ export const AppSidebar: React.FC = () => {
   // ===========================================================================
 
   const { activeCategoryId, activeFolder, activeNoteId, notes } = useSelector(getNotes)
-  const { previewMarkdown, notesSortKey } = useSelector(getSettings)
+  const { previewMarkdown, notesSortKey, togglePreviewMarkdown } = useSettingsStore((state) => ({
+    previewMarkdown: state.previewMarkdown,
+    notesSortKey: state.notesSortKey,
+    togglePreviewMarkdown: state.togglePreviewMarkdown,
+  }))
 
   const activeNote = getActiveNote(notes, activeNoteId)
 
@@ -46,7 +50,6 @@ export const AppSidebar: React.FC = () => {
     dispatch(updateSelectedNotes({ noteId, multiSelect }))
   const _swapFolder = (sortOrderKey: NotesSortKey) => (folder: Folder) =>
     dispatch(swapFolder({ folder, sortOrderKey }))
-  const _togglePreviewMarkdown = () => dispatch(togglePreviewMarkdown())
   const _assignTrashToNotes = (noteId: string) => dispatch(assignTrashToNotes(noteId))
   const _unassignTrashFromNotes = (noteId: string) => dispatch(unassignTrashFromNotes(noteId))
   const _assignFavoriteToNotes = (noteId: string) => dispatch(assignFavoriteToNotes(noteId))
@@ -62,7 +65,7 @@ export const AppSidebar: React.FC = () => {
       activeNote,
       activeCategoryId,
       swapFolderHandler,
-      _togglePreviewMarkdown,
+      togglePreviewMarkdown,
       _addNote,
       _updateActiveNote,
       _updateSelectedNotes

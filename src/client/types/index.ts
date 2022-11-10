@@ -72,6 +72,14 @@ export interface SettingsState {
   notesSortKey: NotesSortKey
   codeMirrorOptions: { [key: string]: any }
 }
+export interface SettingsStore extends SettingsState {
+  toggleSettingsModal: () => void
+  updateCodeMirrorOption: (key: string, value: string) => void
+  togglePreviewMarkdown: () => void
+  toggleDarkTheme: () => void
+  updateNotesSortStrategy: (notesSortKey: NotesSortKey) => void
+  loadSettings: () => void
+}
 
 export interface SyncState {
   syncing: boolean

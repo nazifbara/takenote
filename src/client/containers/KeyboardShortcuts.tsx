@@ -16,9 +16,9 @@ import {
   updateNote,
 } from '@/slices/note'
 import { sync } from '@/slices/sync'
-import { getCategories, getNotes, getSettings } from '@/selectors'
+import { useSettingsStore } from '@/store/settings'
+import { getCategories, getNotes } from '@/selectors'
 import { CategoryItem, NoteItem } from '@/types'
-import { toggleDarkTheme, togglePreviewMarkdown, updateCodeMirrorOption } from '@/slices/settings'
 
 export const KeyboardShortcuts: React.FC = () => {
   // ===========================================================================
@@ -26,10 +26,22 @@ export const KeyboardShortcuts: React.FC = () => {
   // ===========================================================================
 
   const { categories } = useSelector(getCategories)
-  const { activeCategoryId, activeFolder, activeNoteId, notes, selectedNotesIds } = useSelector(
-    getNotes
-  )
-  const { darkTheme, previewMarkdown } = useSelector(getSettings)
+  const { activeCategoryId, activeFolder, activeNoteId, notes, selectedNotesIds } =
+    useSelector(getNotes)
+
+  const {
+    darkTheme,
+    previewMarkdown,
+    toggleDarkTheme,
+    togglePreviewMarkdown,
+    updateCodeMirrorOption,
+  } = useSettingsStore((state) => ({
+    darkTheme: state.darkTheme,
+    previewMarkdown: state.previewMarkdown,
+    toggleDarkTheme: state.toggleDarkTheme,
+    togglePreviewMarkdown: state.togglePreviewMarkdown,
+    updateCodeMirrorOption: state.updateCodeMirrorOption,
+  }))
 
   const activeNote = getActiveNote(notes, activeNoteId)
 
@@ -48,10 +60,6 @@ export const KeyboardShortcuts: React.FC = () => {
   const _toggleTrashNotes = (noteId: string) => dispatch(toggleTrashNotes(noteId))
   const _sync = (notes: NoteItem[], categories: CategoryItem[]) =>
     dispatch(sync({ notes, categories }))
-  const _togglePreviewMarkdown = () => dispatch(togglePreviewMarkdown())
-  const _toggleDarkTheme = () => dispatch(toggleDarkTheme())
-  const _updateCodeMirrorOption = (key: string, value: string) =>
-    dispatch(updateCodeMirrorOption({ key, value }))
 
   // ===========================================================================
   // State
@@ -70,7 +78,7 @@ export const KeyboardShortcuts: React.FC = () => {
       activeNote,
       activeCategoryId,
       _swapFolder,
-      _togglePreviewMarkdown,
+      togglePreviewMarkdown,
       _addNote,
       _updateActiveNote,
       _updateSelectedNotes
@@ -87,10 +95,10 @@ export const KeyboardShortcuts: React.FC = () => {
       categories
     )
   }
-  const togglePreviewMarkdownHandler = () => _togglePreviewMarkdown()
+  const togglePreviewMarkdownHandler = () => togglePreviewMarkdown()
   const toggleDarkThemeHandler = () => {
-    _toggleDarkTheme()
-    _updateCodeMirrorOption('theme', darkTheme ? 'base16-light' : 'new-moon')
+    toggleDarkTheme()
+    updateCodeMirrorOption('theme', darkTheme ? 'base16-light' : 'new-moon')
   }
   const prettifyNoteHandler = () => {
     // format current note with prettier

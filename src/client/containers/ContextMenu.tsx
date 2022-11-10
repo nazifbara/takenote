@@ -6,7 +6,8 @@ import { SelectCategory } from '@/components/NoteList/SelectCategory'
 import { ContextMenuOptions } from '@/containers/ContextMenuOptions'
 import { addCategoryToNote, updateActiveCategoryId, updateActiveNote } from '@/slices/note'
 import { NoteItem, CategoryItem } from '@/types'
-import { getNotes, getCategories, getSettings } from '@/selectors'
+import { useSettingsStore } from '@/store/settings'
+import { getNotes, getCategories } from '@/selectors'
 import { ContextMenuEnum } from '@/utils/enums'
 import { isDraftNote } from '@/utils/helpers'
 
@@ -36,8 +37,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
   // ===========================================================================
   // Selectors
   // ===========================================================================
-
-  const { darkTheme } = useSelector(getSettings)
+  const darkTheme = useSettingsStore((state) => state.darkTheme)
 
   // ===========================================================================
   // State

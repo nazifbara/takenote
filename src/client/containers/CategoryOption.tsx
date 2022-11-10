@@ -6,7 +6,8 @@ import { Folder as FolderIcon, MoreHorizontal } from 'react-feather'
 import { TestID } from '@resources/TestID'
 import { CategoryItem, ReactDragEvent, ReactMouseEvent, ReactSubmitEvent } from '@/types'
 import { determineCategoryClass } from '@/utils/helpers'
-import { getNotes, getCategories, getSettings } from '@/selectors'
+import { useSettingsStore } from '@/store/settings'
+import { getNotes, getCategories } from '@/selectors'
 import {
   updateActiveCategoryId,
   updateActiveNote,
@@ -56,7 +57,7 @@ export const CategoryOption: React.FC<CategoryOptionProps> = ({
   const {
     editingCategory: { id: editingCategoryId, tempName: tempCategoryName },
   } = useSelector(getCategories)
-  const { notesSortKey } = useSelector(getSettings)
+  const notesSortKey = useSettingsStore((state) => state.notesSortKey)
 
   // ===========================================================================
   // Dispatch

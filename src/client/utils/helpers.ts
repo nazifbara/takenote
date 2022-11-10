@@ -134,7 +134,7 @@ export const newNoteHandlerHelper = (
   swapFolder: (
     folder: Folder
   ) => WithPayload<{ folder: string; sortOrderKey?: NotesSortKey }, Action<string>>,
-  togglePreviewMarkdown: () => WithPayload<undefined, Action<string>>,
+  togglePreviewMarkdown: () => void,
   addNote: (note: NoteItem) => WithPayload<NoteItem, Action<string>>,
   updateActiveNote: (
     noteId: string,

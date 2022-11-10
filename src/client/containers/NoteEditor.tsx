@@ -10,7 +10,8 @@ import { NoteItem } from '@/types'
 import { NoteMenuBar } from '@/containers/NoteMenuBar'
 import { EmptyEditor } from '@/components/Editor/EmptyEditor'
 import { PreviewEditor } from '@/components/Editor/PreviewEditor'
-import { getNotes, getSettings, getSync } from '@/selectors'
+import { useSettingsStore } from '@/store/settings'
+import { getNotes, getSync } from '@/selectors'
 import { setPendingSync } from '@/slices/sync'
 
 import 'codemirror/lib/codemirror.css'
@@ -26,7 +27,8 @@ export const NoteEditor: React.FC = () => {
 
   const { pendingSync } = useSelector(getSync)
   const { activeNoteId, loading, notes } = useSelector(getNotes)
-  const { codeMirrorOptions, previewMarkdown } = useSelector(getSettings)
+  const codeMirrorOptions = useSettingsStore((state) => state.codeMirrorOptions)
+  const previewMarkdown = useSettingsStore((state) => state.previewMarkdown)
 
   const activeNote = getActiveNote(notes, activeNoteId)
 
