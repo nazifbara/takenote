@@ -11,13 +11,13 @@ import {
   UploadCloud,
 } from 'react-feather'
 
+import { useAuthStore } from '@/store/auth'
 import { updateNotes, importNotes } from '@/slices/note'
-import { logout } from '@/slices/auth'
 import { importCategories } from '@/slices/category'
 import { shortcutMap, notesSortOptions, directionTextOptions } from '@/utils/constants'
 import { CategoryItem, NoteItem, ReactMouseEvent } from '@/types'
 import { useSettingsStore } from '@/store/settings'
-import { getAuth, getNotes, getCategories } from '@/selectors'
+import { getNotes, getCategories } from '@/selectors'
 import { Option } from '@/components/SettingsModal/Option'
 import { Shortcut } from '@/components/SettingsModal/Shortcut'
 import { SelectOptions } from '@/components/SettingsModal/SelectOptions'
@@ -58,7 +58,10 @@ export const SettingsModal: React.FC = () => {
     updateNotesSortStrategy: state.updateNotesSortStrategy,
   }))
 
-  const { currentUser } = useSelector(getAuth)
+  const { currentUser, logout } = useAuthStore((state) => ({
+    currentUser: state.currentUser,
+    logout: state.logout,
+  }))
   const { notes, activeFolder, activeCategoryId } = useSelector(getNotes)
   const { categories } = useSelector(getCategories)
 
@@ -68,7 +71,6 @@ export const SettingsModal: React.FC = () => {
 
   const dispatch = useDispatch()
 
-  const _logout = () => dispatch(logout())
   const _updateNotesSortStrategy = (sortBy: NotesSortKey) =>
     dispatch(updateNotesSortStrategy(sortBy))
   const _updateNotes = (sortOrderKey: NotesSortKey) =>
@@ -173,7 +175,7 @@ export const SettingsModal: React.FC = () => {
             </div>
             <button
               onClick={() => {
-                _logout()
+                logout()
               }}
             >
               Log out

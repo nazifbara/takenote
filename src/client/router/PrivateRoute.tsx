@@ -1,15 +1,14 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
 import { Redirect, Route, RouteProps } from 'react-router-dom'
 
-import { getAuth } from '@/selectors'
+import { useAuthStore } from '@/store/auth'
 
 interface PrivateRouteProps extends RouteProps {
   component: any
 }
 
 export const PrivateRoute: React.FC<PrivateRouteProps> = ({ component: Component, ...rest }) => {
-  const { isAuthenticated } = useSelector(getAuth)
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
 
   return (
     <Route

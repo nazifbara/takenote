@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { Route, Switch, Redirect } from 'react-router-dom'
 import { Helmet, HelmetProvider } from 'react-helmet-async'
 
@@ -7,32 +6,18 @@ import { LandingPage } from '@/components/LandingPage'
 import { TakeNoteApp } from '@/containers/TakeNoteApp'
 import { PublicRoute } from '@/router/PublicRoute'
 import { PrivateRoute } from '@/router/PrivateRoute'
-import { getAuth } from '@/selectors'
-import { login } from '@/slices/auth'
+import { useAuthStore } from '@/store/auth'
 
 const isDemo = process.env.DEMO
 
 export const App: React.FC = () => {
-  // ===========================================================================
-  // Selectors
-  // ===========================================================================
-
-  const { loading } = useSelector(getAuth)
-
-  // ===========================================================================
-  // Dispatch
-  // ===========================================================================
-
-  const dispatch = useDispatch()
-
-  const _login = () => dispatch(login())
-
-  // ===========================================================================
-  // Hooks
-  // ===========================================================================
+  const { loading, login } = useAuthStore((state) => ({
+    loading: state.loading,
+    login: state.login,
+  }))
 
   useEffect(() => {
-    _login()
+    login()
   }, [])
 
   if (loading) {

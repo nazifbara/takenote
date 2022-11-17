@@ -81,6 +81,11 @@ export interface SettingsStore extends SettingsState {
   loadSettings: () => void
 }
 
+export interface AuthStore extends AuthState {
+  login: () => void
+  logout: () => void
+}
+
 export interface SyncState {
   syncing: boolean
   lastSynced: string
