@@ -1,16 +1,14 @@
 import React, { useRef, useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
 import { v4 as uuid } from 'uuid'
 import { Droppable } from 'react-beautiful-dnd'
 
+import { useCategoryStore } from '@/store/category'
 import { LabelText } from '@resources/LabelText'
 import { TestID } from '@resources/TestID'
 import { CategoryOption } from '@/containers/CategoryOption'
-import { getCategories } from '@/selectors'
 import { shouldOpenContextMenu } from '@/utils/helpers'
-import { ReactMouseEvent, ReactSubmitEvent, CategoryItem } from '@/types'
+import { ReactMouseEvent, ReactSubmitEvent } from '@/types'
 import { useTempState } from '@/contexts/TempStateContext'
-import { setCategoryEdit, updateCategory, addCategory } from '@/slices/category'
 import { AddCategoryForm } from '@/components/AppSidebar/AddCategoryForm'
 import { AddCategoryButton } from '@/components/AppSidebar/AddCategoryButton'
 import { CollapseCategoryListButton } from '@/components/AppSidebar/CollapseCategoryButton'
@@ -23,18 +21,20 @@ export const CategoryList: React.FC = () => {
   const {
     categories,
     editingCategory: { id: editingCategoryId, tempName: tempCategoryName },
-  } = useSelector(getCategories)
+    setCategoryEdit,
+    updateCategory,
+    addCategory,
+  } = useCategoryStore((state) => ({
+    categories: state.categories,
+    editingCategory: state.editingCategory,
+    setCategoryEdit: state.setCategoryEdit,
+    updateCategory: state.updateCategory,
+    addCategory: state.addCategory,
+  }))
 
   // ===========================================================================
   // Dispatch
   // ===========================================================================
-
-  const dispatch = useDispatch()
-
-  const _setCategoryEdit = (categoryId: string, tempName: string) =>
-    dispatch(setCategoryEdit({ id: categoryId, tempName }))
-  const _updateCategory = (category: CategoryItem) => dispatch(updateCategory(category))
-  const _addCategory = (category: CategoryItem) => dispatch(addCategory(category))
 
   // ===========================================================================
   // Refs
@@ -97,7 +97,7 @@ export const CategoryList: React.FC = () => {
 
   const resetTempCategory = () => {
     setAddingTempCategory(false)
-    _setCategoryEdit('', '')
+    setCategoryEdit('', '')
   }
 
   const onSubmitUpdateCategory = (event: ReactSubmitEvent): void => {
@@ -108,7 +108,7 @@ export const CategoryList: React.FC = () => {
     if (categories.find((cat) => cat.name === category.name) || category.name === '') {
       resetTempCategory()
     } else {
-      _updateCategory(category)
+      updateCategory(category)
       resetTempCategory()
     }
   }
@@ -121,7 +121,7 @@ export const CategoryList: React.FC = () => {
     if (categories.find((cat) => cat.name === category.name) || category.name === '') {
       resetTempCategory()
     } else {
-      _addCategory(category)
+      addCategory(category)
       resetTempCategory()
     }
   }
@@ -186,7 +186,7 @@ export const CategoryList: React.FC = () => {
             <AddCategoryForm
               dataTestID={TestID.NEW_CATEGORY_FORM}
               submitHandler={onSubmitNewCategory}
-              changeHandler={_setCategoryEdit}
+              changeHandler={setCategoryEdit}
               resetHandler={resetTempCategory}
               editingCategoryId={editingCategoryId}
               tempCategoryName={tempCategoryName}

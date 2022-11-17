@@ -13,11 +13,11 @@ import {
 
 import { useAuthStore } from '@/store/auth'
 import { updateNotes, importNotes } from '@/slices/note'
-import { importCategories } from '@/slices/category'
 import { shortcutMap, notesSortOptions, directionTextOptions } from '@/utils/constants'
 import { CategoryItem, NoteItem, ReactMouseEvent } from '@/types'
 import { useSettingsStore } from '@/store/settings'
-import { getNotes, getCategories } from '@/selectors'
+import { getNotes } from '@/selectors'
+import { useCategoryStore } from '@/store/category'
 import { Option } from '@/components/SettingsModal/Option'
 import { Shortcut } from '@/components/SettingsModal/Shortcut'
 import { SelectOptions } from '@/components/SettingsModal/SelectOptions'
@@ -63,7 +63,10 @@ export const SettingsModal: React.FC = () => {
     logout: state.logout,
   }))
   const { notes, activeFolder, activeCategoryId } = useSelector(getNotes)
-  const { categories } = useSelector(getCategories)
+  const { categories, importCategories } = useCategoryStore((state) => ({
+    categories: state.categories,
+    importCategories: state.importCategories,
+  }))
 
   // ===========================================================================
   // Dispatch

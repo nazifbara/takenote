@@ -72,6 +72,19 @@ export interface SettingsState {
   notesSortKey: NotesSortKey
   codeMirrorOptions: { [key: string]: any }
 }
+
+export interface CategoryStore extends CategoryState {
+  addCategory: (categoryItem: CategoryItem) => void
+  importCategories: (categoryItems: CategoryItem[]) => void
+  updateCategory: (categoryItem: CategoryItem) => void
+  deleteCategory: (categoryId: string) => void
+  categoryDragEnter: (categoryItem: CategoryItem) => void
+  categoryDragLeave: (categoryItem: CategoryItem) => void
+  swapCategories: (categoryId: number, destinationId: number) => void
+  setCategoryEdit: (categoryId: string, tempName: string) => void
+  loadCategories: () => void
+}
+
 export interface SettingsStore extends SettingsState {
   toggleSettingsModal: () => void
   updateCodeMirrorOption: (key: string, value: string) => void

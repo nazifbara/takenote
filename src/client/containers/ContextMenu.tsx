@@ -2,12 +2,13 @@ import ReactDOM from 'react-dom'
 import React, { useEffect, useState, createContext } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import { useCategoryStore } from '@/store/category'
 import { SelectCategory } from '@/components/NoteList/SelectCategory'
 import { ContextMenuOptions } from '@/containers/ContextMenuOptions'
 import { addCategoryToNote, updateActiveCategoryId, updateActiveNote } from '@/slices/note'
 import { NoteItem, CategoryItem } from '@/types'
 import { useSettingsStore } from '@/store/settings'
-import { getNotes, getCategories } from '@/selectors'
+import { getNotes } from '@/selectors'
 import { ContextMenuEnum } from '@/utils/enums'
 import { isDraftNote } from '@/utils/helpers'
 
@@ -128,7 +129,9 @@ const NotesMenu: React.FC<NotesMenuProps> = ({ note, setOptionsId }) => {
   // Selectors
   // ===========================================================================
 
-  const { categories } = useSelector(getCategories)
+  const { categories } = useCategoryStore((state) => ({
+    categories: state.categories,
+  }))
   const { activeCategoryId } = useSelector(getNotes)
 
   // ===========================================================================

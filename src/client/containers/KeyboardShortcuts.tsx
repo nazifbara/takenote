@@ -17,15 +17,16 @@ import {
 } from '@/slices/note'
 import { sync } from '@/slices/sync'
 import { useSettingsStore } from '@/store/settings'
-import { getCategories, getNotes } from '@/selectors'
+import { getNotes } from '@/selectors'
 import { CategoryItem, NoteItem } from '@/types'
+import { useCategoryStore } from '@/store/category'
 
 export const KeyboardShortcuts: React.FC = () => {
   // ===========================================================================
   // Selectors
   // ===========================================================================
 
-  const { categories } = useSelector(getCategories)
+  const { categories } = useCategoryStore((state) => ({ categories: state.categories }))
   const { activeCategoryId, activeFolder, activeNoteId, notes, selectedNotesIds } =
     useSelector(getNotes)
 

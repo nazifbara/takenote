@@ -3,18 +3,18 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Draggable } from 'react-beautiful-dnd'
 import { Folder as FolderIcon, MoreHorizontal } from 'react-feather'
 
+import { useCategoryStore } from '@/store/category'
 import { TestID } from '@resources/TestID'
 import { CategoryItem, ReactDragEvent, ReactMouseEvent, ReactSubmitEvent } from '@/types'
 import { determineCategoryClass } from '@/utils/helpers'
 import { useSettingsStore } from '@/store/settings'
-import { getNotes, getCategories } from '@/selectors'
+import { getNotes } from '@/selectors'
 import {
   updateActiveCategoryId,
   updateActiveNote,
   updateSelectedNotes,
   addCategoryToNote,
 } from '@/slices/note'
-import { setCategoryEdit, categoryDragLeave, categoryDragEnter } from '@/slices/category'
 import { iconColor } from '@/utils/constants'
 import { ContextMenuEnum } from '@/utils/enums'
 import { getNotesSorter } from '@/utils/notesSortStrategies'
@@ -56,7 +56,15 @@ export const CategoryOption: React.FC<CategoryOptionProps> = ({
   const { activeCategoryId, notes } = useSelector(getNotes)
   const {
     editingCategory: { id: editingCategoryId, tempName: tempCategoryName },
-  } = useSelector(getCategories)
+    setCategoryEdit,
+    categoryDragLeave,
+    categoryDragEnter,
+  } = useCategoryStore((state) => ({
+    editingCategory: state.editingCategory,
+    setCategoryEdit: state.setCategoryEdit,
+    categoryDragLeave: state.categoryDragEnter,
+    categoryDragEnter: state.categoryDragLeave,
+  }))
   const notesSortKey = useSettingsStore((state) => state.notesSortKey)
 
   // ===========================================================================
@@ -71,12 +79,8 @@ export const CategoryOption: React.FC<CategoryOptionProps> = ({
     dispatch(updateActiveNote({ noteId, multiSelect }))
   const _updateSelectedNotes = (noteId: string, multiSelect: boolean) =>
     dispatch(updateSelectedNotes({ noteId, multiSelect }))
-  const _setCategoryEdit = (categoryId: string, tempName: string) =>
-    dispatch(setCategoryEdit({ id: categoryId, tempName }))
   const _addCategoryToNote = (categoryId: string, noteId: string) =>
     dispatch(addCategoryToNote({ categoryId, noteId }))
-  const _categoryDragEnter = (category: CategoryItem) => dispatch(categoryDragEnter(category))
-  const _categoryDragLeave = (category: CategoryItem) => dispatch(categoryDragLeave(category))
 
   return (
     <Draggable draggableId={category.id} index={index}>
@@ -102,27 +106,27 @@ export const CategoryOption: React.FC<CategoryOptionProps> = ({
             }
           }}
           onDoubleClick={() => {
-            _setCategoryEdit(category.id, category.name)
+            setCategoryEdit(category.id, category.name)
           }}
           onBlur={() => {
-            _setCategoryEdit('', '')
+            setCategoryEdit('', '')
           }}
           onDrop={(event) => {
             event.preventDefault()
 
             _addCategoryToNote(category.id, event.dataTransfer.getData('text'))
-            _categoryDragLeave(category)
+            categoryDragLeave(category)
           }}
           onDragOver={(event: ReactDragEvent) => event.preventDefault()}
-          onDragEnter={() => _categoryDragEnter(category)}
-          onDragLeave={() => _categoryDragLeave(category)}
+          onDragEnter={() => categoryDragEnter(category)}
+          onDragLeave={() => categoryDragLeave(category)}
           onContextMenu={(event) => handleCategoryRightClick(event, category.id)}
         >
           <form
             className="category-list-name"
             onSubmit={(event) => {
               event.preventDefault()
-              _setCategoryEdit('', '')
+              setCategoryEdit('', '')
               onSubmitUpdateCategory(event)
 
               if (optionsId) setOptionsId('')
@@ -138,7 +142,7 @@ export const CategoryOption: React.FC<CategoryOptionProps> = ({
                 maxLength={20}
                 value={tempCategoryName}
                 onChange={(event) => {
-                  _setCategoryEdit(editingCategoryId, event.target.value)
+                  setCategoryEdit(editingCategoryId, event.target.value)
                 }}
                 onBlur={(event) => onSubmitUpdateCategory(event)}
               />

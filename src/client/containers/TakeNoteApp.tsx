@@ -20,12 +20,13 @@ import {
   getDayJsLocale,
   getNoteBarConf,
 } from '@/utils/helpers'
-import { loadCategories, swapCategories } from '@/slices/category'
+import {} from '@/slices/category'
 import { sync } from '@/slices/sync'
 import { NoteItem, CategoryItem } from '@/types'
 import { loadNotes } from '@/slices/note'
 import { useSettingsStore } from '@/store/settings'
-import { getNotes, getCategories, getSync } from '@/selectors'
+import { getNotes, getSync } from '@/selectors'
+import { useCategoryStore } from '@/store/category'
 
 dayjs.extend(localizedFormat)
 dayjs.locale(getDayJsLocale(navigator.language))
@@ -41,7 +42,11 @@ export const TakeNoteApp: React.FC = () => {
     loadSettings: state.loadSettings,
   }))
   const { activeFolder, activeCategoryId, notes } = useSelector(getNotes)
-  const { categories } = useSelector(getCategories)
+  const { categories, loadCategories, swapCategories } = useCategoryStore((state) => ({
+    categories: state.categories,
+    loadCategories: state.loadCategories,
+    swapCategories: state.swapCategories,
+  }))
   const { pendingSync } = useSelector(getSync)
 
   const activeCategory = getActiveCategory(categories, activeCategoryId)
@@ -53,9 +58,7 @@ export const TakeNoteApp: React.FC = () => {
   const dispatch = useDispatch()
 
   const _loadNotes = () => dispatch(loadNotes())
-  const _loadCategories = () => dispatch(loadCategories())
-  const _swapCategories = (categoryId: number, destinationId: number) =>
-    dispatch(swapCategories({ categoryId, destinationId }))
+
   const _sync = (notes: NoteItem[], categories: CategoryItem[]) =>
     dispatch(sync({ notes, categories }))
 
@@ -71,7 +74,7 @@ export const TakeNoteApp: React.FC = () => {
     if (destination.droppableId === source.droppableId && destination.index === source.index) return
 
     if (result.type === 'CATEGORY') {
-      _swapCategories(source.index, destination.index)
+      swapCategories(source.index, destination.index)
     }
   }
 
@@ -81,7 +84,7 @@ export const TakeNoteApp: React.FC = () => {
 
   useEffect(() => {
     _loadNotes()
-    _loadCategories()
+    loadCategories()
     loadSettings()
   }, [])
 

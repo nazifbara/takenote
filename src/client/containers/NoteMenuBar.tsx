@@ -19,7 +19,8 @@ import { LastSyncedNotification } from '@/components/LastSyncedNotification'
 import { NoteItem, CategoryItem } from '@/types'
 import { toggleFavoriteNotes, toggleTrashNotes } from '@/slices/note'
 import { useSettingsStore } from '@/store/settings'
-import { getCategories, getNotes, getSync } from '@/selectors'
+import { getNotes, getSync } from '@/selectors'
+import { useCategoryStore } from '@/store/category'
 import { downloadNotes, isDraftNote, getShortUuid, copyToClipboard } from '@/utils/helpers'
 import { sync } from '@/slices/sync'
 
@@ -29,7 +30,7 @@ export const NoteMenuBar = () => {
   // ===========================================================================
 
   const { notes, activeNoteId } = useSelector(getNotes)
-  const { categories } = useSelector(getCategories)
+  const { categories } = useCategoryStore((state) => ({ categories: state.categories }))
   const { syncing, lastSynced, pendingSync } = useSelector(getSync)
   const {
     darkTheme,
